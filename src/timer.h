@@ -3,11 +3,15 @@
 
 #include<iostream>
 #include<string>
-#include<memory>
-
-
-
-
+#include <memory>
+#include <vector>
+#include <array>
+#include <chrono>
+#include <mutex>
+#include <atomic>
+// #include <thread>
+// #include <functional>
+// #include <algorithm>
 
 #if defined(__APPLE__)
 #include <mach/mach_time.h>
@@ -35,7 +39,7 @@ namespace ASC_HPC
 #endif
     
 #if defined(__amd64__) || defined(_M_AMD64)
-    return __rdtsc();    
+    return __rdtsc();
 #endif
     
     return std::chrono::high_resolution_clock::now().time_since_epoch().count();

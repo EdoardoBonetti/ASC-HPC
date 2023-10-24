@@ -86,13 +86,22 @@ namespace ASC_HPC
     
     std::atomic<int> cnt{0};
 
-    Task firsttask;
-    firsttask.nr = 0;
-    firsttask.size = num;
-    firsttask.pfunc=&func;
-    firsttask.cnt = &cnt;
-    queue.enqueue_bulk (ptoken, firsttask, num);    
-    
+    // Task firsttask;
+    // firsttask.nr = 0;
+    // firsttask.size = num;
+    // firsttask.pfunc=&func;
+    // firsttask.cnt = &cnt;
+    // queue.enqueue_bulk (ptoken, firsttask, num);
+    for (size_t i = 0; i < num; i++)
+    {
+      Task task;
+      task.nr = i;
+      task.size = num;
+      task.pfunc = &func;
+      task.cnt = &cnt;
+      queue.enqueue(ptoken, task);
+    }
+
     while (cnt < num)
       {
         Task task;

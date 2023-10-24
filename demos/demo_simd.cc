@@ -22,7 +22,19 @@ auto Func3 (SIMD<double,4> a, SIMD<double,4> b, SIMD<double,4> c)
   return FMA(a,b,c);
 }
 
+auto ForLoop(size_t n, SIMD<double, 4> *x, SIMD<double, 4> *y, SIMD<double, 4> *z)
+{
+  for (int i = 0; i < n; i++)
+    z[i] = x[i] + y[i];
+}
 
+auto InnerProduct(size_t n, SIMD<double, 4> *x, SIMD<double, 4> *y)
+{
+  SIMD<double, 4> sum(0.);
+  for (int i = 0; i < n; i++)
+    sum = sum + x[i] * y[i];
+  return sum;
+}
 
 int main()
 {

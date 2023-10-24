@@ -14,15 +14,14 @@ int main()
   timeline = std::make_unique<TimeLine>("demo.trace");
 
   StartWorkers(3);
-  
-  RunParallel(10, [] (int i, int size)
-  {
-    static Timer t("timer one");
-    RegionTimer reg(t);
-    cout << "I am task " << i << " out of " << size << endl;
-  });
 
-  
+  RunParallel(
+      1000, [](int i, int size)
+      {
+        static Timer t("timer one");
+        RegionTimer reg(t);
+        cout << "I am task " << i << " out of " << size << endl; });
+
   RunParallel(6, [] (int i, int s)
   {
     RunParallel(6, [i] (int j, int s2)

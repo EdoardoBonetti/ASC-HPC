@@ -3,6 +3,9 @@ project(ASC_HPC)
 
 set (CMAKE_CXX_STANDARD 17)
 
+# set flag native
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+
 include_directories(src concurrentqueue)
 
 
