@@ -3,8 +3,7 @@
 #include "timer.h"
 #include "taskmanager.h"
 
-
-namespace ASC_HPC
+namespace Tombino_HPC
 {
   thread_local std::unique_ptr<TimeLine> timeline;
   std::mutex TimeLine::timeline_mutex;

@@ -1,17 +1,16 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <string>
 #include <memory>
 #include <vector>
 #include <array>
 #include <chrono>
 #include <mutex>
-#include <atomic>
-// #include <thread>
-// #include <functional>
-// #include <algorithm>
+#include <thread>
+#include <functional>
+#include <algorithm>
 
 #if defined(__APPLE__)
 #include <mach/mach_time.h>
@@ -19,31 +18,27 @@
 
 #if defined(__amd64__) || defined(_M_AMD64)
 #ifdef WIN32
-#include <intrin.h>   // for __rdtsc()  CPU time step counter
+#include <intrin.h> // for __rdtsc()  CPU time step counter
 #else
-#include <x86intrin.h>   // for __rdtsc()  CPU time step counter
-#endif // WIN32
+#include <x86intrin.h> // for __rdtsc()  CPU time step counter
+#endif                 // WIN32
 #endif
 
-
-
-
-namespace ASC_HPC
+namespace Tombino_HPC
 {
 
-
-  inline size_t GetTimeCounter() 
+  inline size_t GetTimeCounter()
   {
 #if defined(__APPLE__)
     return mach_absolute_time();
 #endif
-    
+
 #if defined(__amd64__) || defined(_M_AMD64)
     return __rdtsc();
 #endif
-    
+
     return std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    
+
     /*
     // copied from ngcore/utils
     #if defined(__APPLE__) && defined(NETGEN_ARCH_ARM64)
@@ -64,14 +59,12 @@ namespace ASC_HPC
     */
   }
 
-
   struct Event
   {
     size_t when;
     int timer;
     int what; // 0..start, 1..stop
   };
-
 
   class TimeLine
   {
@@ -81,39 +74,40 @@ namespace ASC_HPC
     std::vector<TimeLine> subtl;
     static std::mutex timeline_mutex;
     std::string filename;
+
   public:
     TimeLine(std::string _filename = "");
-    TimeLine(const TimeLine&) = default;    
-    TimeLine(TimeLine&&) = default;
+    TimeLine(const TimeLine &) = default;
+    TimeLine(TimeLine &&) = default;
     ~TimeLine();
-    
-    void Add (Event event)
+
+    void Add(Event event)
     {
       events.push_back(event);
     }
 
-    void AddTimeLine (TimeLine sub)
+    void AddTimeLine(TimeLine sub)
     {
-      std::lock_guard<std::mutex> lock(timeline_mutex);      
+      std::lock_guard<std::mutex> lock(timeline_mutex);
       subtl.push_back(std::move(sub));
     }
 
-    void Print (std::ostream & ost) const;
+    void Print(std::ostream &ost) const;
   };
-  
+
   extern thread_local std::unique_ptr<TimeLine> timeline;
 
-  
   class Timer
   {
     int nr;
     static std::vector<std::string> names;
-    static std::vector<std::array<float,3>> cols;    
+    static std::vector<std::array<float, 3>> cols;
     static std::mutex m;
-  public:     
-    Timer(const std::string & name, std::array<float,3> col = { 0, 1, 0})
+
+  public:
+    Timer(const std::string &name, std::array<float, 3> col = {0, 1, 0})
     {
-      std::lock_guard<std::mutex> lock(m);            
+      std::lock_guard<std::mutex> lock(m);
       nr = names.size();
       names.push_back(name);
       cols.push_back(col);
@@ -122,7 +116,7 @@ namespace ASC_HPC
     void Start()
     {
       if (timeline)
-        timeline->Add (Event{GetTimeCounter(), nr, 0});
+        timeline->Add(Event{GetTimeCounter(), nr, 0});
     }
 
     void Stop()
@@ -133,16 +127,16 @@ namespace ASC_HPC
     friend TimeLine;
   };
 
-
   class RegionTimer
   {
-    Timer & t;
+    Timer &t;
+
   public:
-    RegionTimer (Timer & _t) : t(_t)
+    RegionTimer(Timer &_t) : t(_t)
     {
       t.Start();
     }
-    ~RegionTimer ()
+    ~RegionTimer()
     {
       t.Stop();
     }
